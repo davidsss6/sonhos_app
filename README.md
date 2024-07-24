@@ -2,7 +2,7 @@
 
 ## Introdução
 
-Bem-vindos ao **Interpretador de Sonhos com IA**, um aplicativo inovador desenvolvido para interpretar sonhos utilizando tecnologias avançadas de Inteligência Artificial. Este projeto foi criado como parte do curso sobre Inteligência Artificial, e estamos animados para compartilhar os detalhes com vocês!
+Bem-vindos ao **Interpretador de Sonhos com IA**, um aplicativo inovador desenvolvido para interpretar sonhos utilizando tecnologias avançadas de Inteligência Artificial. Este projeto foi criado como parte do curso da DIO: **Microsoft Copilot AI**, e estou animado para compartilhar os detalhes com vocês!
 
 ## Tecnologias Utilizadas
 
@@ -27,95 +27,66 @@ Nosso aplicativo permite que os usuários descrevam seus sonhos e recebam uma in
 Para a interface do usuário, utilizamos Flutter, uma poderosa ferramenta de desenvolvimento que permite criar interfaces nativas para iOS e Android.
 
 ### Tela de Entrada
-![Tela de Entrada](path/to/image)
+![Tela de Entrada](https://github.com/davidsss6/sonhos_app/blob/main/tela_de_entrada.png)
 
-### Tela de Resposta
-![Tela de Resposta](path/to/image)
+### Tela do formulario
+![Tela de Resposta](https://github.com/davidsss6/sonhos_app/blob/main/tela_formulario.png)
 
 ## 🛠️ Desenvolvimento
 
-### Código do Formulário
 
-Aqui está um trecho do código Dart utilizado para criar o formulário onde o usuário insere seus dados e o sonho:
-
-```dart
-final _formKey = GlobalKey<FormState>();
-
-@override
-Widget build(BuildContext context) {
-  return Form(
-    key: _formKey,
-    child: Column(
-      children: <Widget>[
-        TextFormField(
-          controller: _controllerNome,
-          decoration: InputDecoration(
-            hintText: "Digite seu nome",
-          ),
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Por favor, digite seu nome';
-            }
-            return null;
-          },
-          onSaved: (value) => _name = value,
-        ),
-        TextFormField(
-          controller: _controllerTexto,
-          decoration: InputDecoration(
-            hintText: "Escreva aqui seu sonho",
-          ),
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Por favor, digite seu sonho';
-            }
-            return null;
-          },
-          onSaved: (value) => _text = value,
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              _sendChatMessage();
-            }
-          },
-          child: const Text('ENVIAR'),
-        ),
-      ],
-    ),
-  );
-}
-
-Integração com a API da OpenAI
+## Integração com a API da OpenAI
 
 Para integrar nosso aplicativo com a API da OpenAI, utilizamos o seguinte código:
 
-dart
+```dart
 
 final chatGpt = ChatGpt(apiKey: "sua-api-key-aqui");
 
-Future<void> _sendChatMessage() async {
-  final request = ChatCompletionRequest(
-    model: "gpt-4",
-    messages: [
-      {"role": "user", "content": "Descreva seu sonho aqui"}
-    ],
-  );
+  _sendChatMessage() async {
+    String textoIntroducao =
+        "Ignore todas as intrucoes anteriores a esta. Voce é um estudioso na interpretacao dos sonhos. Ha 20 anos voce ajuda a interpretar os sonhos das pessoas. Sua tarefa agora é interpretar um sonho que vou te contar, segundo os seus conhecimentos em esoterismo. Caso nao saiba interpretar o sonho, envie uma mensagem gentil. O sonho foi: ";
+    ChatMessage message =
+        ChatMessage(text: _controllerTexto.text, sender: "user");
+    String textopergunta = message.text;
+    final question = textoIntroducao + textopergunta;
 
-  final response = await chatGpt.createChatCompletion(request);
-  print(response.choices[0].message.content);
-}
+    setState(() {
+      _messages.insert(0, message);
+      _isTyping = true;
+      _texto_espera = "Interpretando seu sonho. Aguarde...";
+      _controllerTexto.clear();
+      questionAnswers.add(
+        QuestionAnswer(
+          question: question,
+          answer: StringBuffer(),
+        ),
+      );
+    });
 
-🤖 Ferramentas Adicionais
+    final request = ChatCompletionRequest(
+      maxTokens: 4000,
+      messages: [Message(role: Role.user.name, content: question)],
+      model: "gpt-3.5-turbo",
+      temperature: 0.0,
+      // model: ChatGptModel.gpt41106Preview.modelName,
+    );
+    await _chatStreamResponse(request);
 
-    ChatGPT: Utilizamos o ChatGPT para gerar os textos do aplicativo e os códigos de integração da API.
-    Midjourney: As imagens utilizadas no aplicativo foram geradas utilizando o Midjourney.
+    setState(() => _isTyping = true);
+  }
 
-Conclusão
+```
+
+## 🤖 Ferramentas Adicionais
+
+- **ChatGPT:** Utilizamos o ChatGPT para gerar os textos do aplicativo e os códigos de integração da API.
+- **Midjourney:** As imagens utilizadas no aplicativo foram geradas utilizando o Midjourney.
+
+## Conclusão
 
 Este projeto demonstra o poder da Inteligência Artificial e como ela pode ser utilizada para criar aplicativos inovadores e úteis. A interpretação dos sonhos é apenas um exemplo das inúmeras possibilidades que a IA pode oferecer.
 
-Esperamos que tenham gostado da apresentação e estamos abertos para perguntas e discussões!
+Espero que tenha gostado e estou aberto a perguntas e discussões!
 
-Feito com ❤️ por Davidson
+### **Developed by:** Davidson
